@@ -27,3 +27,4 @@ def test_create_and_read_case():
     db.delete(saved_case)
     db.commit()
     db.close()
+
