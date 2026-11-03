@@ -26,4 +26,6 @@ htmlcov/
 
 # Database
 *.sqlite3
+*.db
 data/chroma_db/
+
