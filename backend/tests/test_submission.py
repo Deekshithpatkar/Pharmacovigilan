@@ -37,3 +37,4 @@ def test_submit_invalid_case_missing_required_fields():
 def test_get_nonexistent_case():
     response = client.get("/cases/PV-NONEXISTENT")
     assert response.status_code == 404
+

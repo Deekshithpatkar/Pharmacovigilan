@@ -10,10 +10,17 @@ router = APIRouter(prefix="/cases", tags=["Cases"])
 def submit_case(case_data: AdverseEventCaseCreate, db: Session = Depends(get_db)):
     """Submit a new adverse event report."""
     case = case_service.create_case(db, case_data)
+
+    if case.duplicate_of_id:
+        message = f"Possible duplicate detected. Linked to {case.duplicate_of_id} for human review."
+    else:
+        message = "Adverse event report submitted successfully"
+
     return AdverseEventCaseResponse(
         case_id=case.case_id,
         status=CaseStatus(case.status),
-        message="Adverse event report submitted successfully",
+        message=message,
+        duplicate_of=case.duplicate_of_id,
     )
 
 @router.get("/{case_id}", response_model=AdverseEventCaseResponse)
@@ -26,4 +33,5 @@ def get_case(case_id: str, db: Session = Depends(get_db)):
         case_id=case.case_id,
         status=CaseStatus(case.status),
         message="Case retrieved successfully",
+        duplicate_of=case.duplicate_of_id,
     )

@@ -21,5 +21,6 @@ class CaseModel(Base):
     additional_information: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
     status: Mapped[str] = mapped_column(String(50), default="submitted", nullable=False)
+    duplicate_of_id: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
 
