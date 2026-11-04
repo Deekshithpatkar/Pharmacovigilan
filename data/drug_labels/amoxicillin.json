@@ -1,0 +1,7 @@
+{
+  "drug_name": "Amoxicillin",
+  "source": "FDA Structured Product Label (openFDA)",
+  "version_date": "2024-03-01",
+  "adverse_reactions": "The most common adverse reactions are diarrhea, nausea, vomiting, skin rash, pruritus, and urticaria. Severe reactions include anaphylaxis, erythema multiforme, and Stevens-Johnson syndrome.",
+  "warnings": "Serious and occasionally fatal hypersensitivity (anaphylactic) reactions have been reported in patients on penicillin therapy."
+}

@@ -79,3 +79,4 @@ def normalize_reaction_terms(raw_reactions: List[str]) -> List[str]:
         if term not in normalized:
             normalized.append(term)
     return normalized
+

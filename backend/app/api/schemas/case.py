@@ -1,9 +1,10 @@
 from datetime import date
 from enum import Enum
-from typing import Optional
+from typing import List, Optional
 
 from pydantic import BaseModel, Field, ConfigDict, model_validator
 from app.ai.extraction import ExtractedCaseInfo
+from app.ai.label_retrieval import LabelEvidence
 
 class ReporterType(str, Enum):
     PATIENT = "patient"
@@ -45,3 +46,4 @@ class AdverseEventCaseResponse(BaseModel):
     message: str
     duplicate_of: Optional[str] = None
     extracted_info: Optional[ExtractedCaseInfo] = None
+    evidence: List[LabelEvidence] = Field(default_factory=list)

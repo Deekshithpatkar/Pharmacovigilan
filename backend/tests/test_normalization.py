@@ -52,3 +52,4 @@ def test_duplicate_detection_across_brand_names():
     # It catches it as a duplicate even though one said Tylenol and the other said Paracetamol!
     assert r2_data["status"] == "human_review"
     assert r2_data["duplicate_of"] == case1_id
+

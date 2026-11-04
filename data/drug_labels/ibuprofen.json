@@ -1,0 +1,7 @@
+{
+  "drug_name": "Ibuprofen",
+  "source": "FDA Structured Product Label (openFDA)",
+  "version_date": "2024-02-15",
+  "adverse_reactions": "Common adverse events include nausea, vomiting, abdominal pain, dyspepsia, heartburn, dizziness, and headache.",
+  "warnings": "Nonsteroidal anti-inflammatory drugs (NSAIDs) cause an increased risk of serious gastrointestinal adverse events including bleeding, ulceration, and perforation of the stomach or intestines, which can be fatal."
+}

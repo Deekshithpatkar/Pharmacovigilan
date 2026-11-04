@@ -1,0 +1,7 @@
+{
+  "drug_name": "Aspirin",
+  "source": "FDA Structured Product Label (openFDA)",
+  "version_date": "2024-01-20",
+  "adverse_reactions": "Gastrointestinal adverse reactions include dyspepsia, nausea, vomiting, abdominal pain, and gastrointestinal bleeding. Dermatologic reactions include urticaria, pruritus, and rash.",
+  "warnings": "Aspirin may cause severe allergic reactions which may include hives, facial swelling, asthma (wheezing), or shock."
+}
