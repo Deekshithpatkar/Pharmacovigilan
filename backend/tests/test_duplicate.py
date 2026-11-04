@@ -48,3 +48,4 @@ def test_duplicate_detection_and_linking():
     diff_data = diff_res.json()
     assert diff_data["status"] == "submitted"
     assert diff_data["duplicate_of"] is None
+

@@ -3,6 +3,7 @@ from enum import Enum
 from typing import Optional
 
 from pydantic import BaseModel, Field, ConfigDict, model_validator
+from app.ai.extraction import ExtractedCaseInfo
 
 class ReporterType(str, Enum):
     PATIENT = "patient"
@@ -43,3 +44,4 @@ class AdverseEventCaseResponse(BaseModel):
     status: CaseStatus
     message: str
     duplicate_of: Optional[str] = None
+    extracted_info: Optional[ExtractedCaseInfo] = None

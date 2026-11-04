@@ -28,3 +28,4 @@ def find_duplicate_case(db: Session, case_data: AdverseEventCaseCreate) -> CaseM
             return candidate
 
     return None
+
