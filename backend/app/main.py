@@ -1,5 +1,9 @@
 from fastapi import FastAPI
-from app.api.routes import health
+from app.database import engine, Base
+from app.api.routes import health, cases
+
+# Ensure database tables exist
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="Pharmacovigilance API",
@@ -8,6 +12,7 @@ app = FastAPI(
 )
 
 app.include_router(health.router)
+app.include_router(cases.router)
 
 @app.get("/")
 def root():

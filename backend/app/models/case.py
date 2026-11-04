@@ -18,6 +18,7 @@ class CaseModel(Base):
     drug_start_date: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
     reaction_start_date: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
     outcome: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    additional_information: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
     status: Mapped[str] = mapped_column(String(50), default="submitted", nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
