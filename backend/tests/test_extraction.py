@@ -43,3 +43,4 @@ def test_extracted_info_in_api_response():
 def test_invalid_severity_raises_validation_error():
     with pytest.raises(ValidationError):
         ExtractedCaseInfo(severity=10)  # ge=1, le=5
+
