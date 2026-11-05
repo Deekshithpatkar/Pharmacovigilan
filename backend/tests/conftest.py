@@ -15,3 +15,4 @@ def clean_db():
     db.query(CaseModel).delete()
     db.commit()
     db.close()
+

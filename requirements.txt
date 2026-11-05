@@ -1,0 +1,12 @@
+pg8000
+langchain-ollama
+langchain-core
+langgraph
+psycopg2-binary
+python-dotenv
+laya
+matplotlib
+Faker
+scikit-learn
+sentence-transformers
+
