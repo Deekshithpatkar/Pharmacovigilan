@@ -61,6 +61,7 @@ REACTION_TERMS = {
     "anaphylaxis": "Anaphylactic reaction",
     "allergic shock": "Anaphylactic reaction",
     "chest pain": "Chest pain",
+    "hair loss": "Alopecia",
 }
 
 def normalize_drug_name(raw_name: str) -> str:

@@ -34,7 +34,8 @@ def _rule_based_extract(text: str, suspected_drug: Optional[str] = None) -> Extr
     common_reactions = [
         "rash", "itching", "hives", "headache", "nausea",
         "vomiting", "dizziness", "ulcer", "swelling", "fever",
-        "anaphylaxis", "shortness of breath", "chest pain", "trouble breathing"
+        "anaphylaxis", "shortness of breath", "chest pain", "trouble breathing",
+        "hair loss"
     ]
     reactions = [r for r in common_reactions if r in text_lower]
     standardized_reactions = normalize_reaction_terms(reactions)

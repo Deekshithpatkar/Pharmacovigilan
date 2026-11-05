@@ -46,3 +46,4 @@ def test_evidence_in_api_response():
     # Ibuprofen label lists dizziness and vomiting
     listed_sections = [e for e in data["evidence"] if e["is_listed"]]
     assert len(listed_sections) > 0
+

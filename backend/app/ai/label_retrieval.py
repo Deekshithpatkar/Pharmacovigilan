@@ -100,3 +100,4 @@ def retrieve_label_evidence(drug_name: str, reaction_terms: List[str]) -> List[L
             ))
 
     return evidence_list
+
