@@ -2,6 +2,7 @@ from typing import List, Optional
 from sqlalchemy.orm import Session
 from app.models.case import CaseModel
 from app.api.schemas.case import CaseStatus
+from app.services.audit_service import record_audit_log
 
 def get_pending_review_cases(db: Session) -> List[CaseModel]:
     """Retrieve all cases currently routed for human review."""
@@ -21,6 +22,7 @@ def submit_human_review(
         return None
 
     # Append reviewer notes to case record
+    previous_status = case.status
     existing_notes = case.additional_information or ""
     separator = "\n---\n" if existing_notes else ""
     case.additional_information = f"{existing_notes}{separator}Reviewer Note: {reviewer_notes}"
@@ -28,5 +30,17 @@ def submit_human_review(
 
     db.commit()
     db.refresh(case)
+
+    # Record adjudication in audit log
+    record_audit_log(
+        db=db,
+        case_id=case.case_id,
+        action="CASE_ADJUDICATED",
+        previous_status=previous_status,
+        new_status=case.status,
+        actor="SAFETY_OFFICER",
+        details=f"Reviewer Note: {reviewer_notes}"
+    )
+
     return case
 

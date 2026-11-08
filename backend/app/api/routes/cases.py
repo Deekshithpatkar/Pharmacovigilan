@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.api.schemas.case import AdverseEventCaseCreate, AdverseEventCaseResponse, CaseStatus
 from app.services import case_service
+from app.services.audit_service import get_case_audit_trail
 from app.ai.extraction import extract_case_info
 from app.ai.label_retrieval import retrieve_label_evidence
 
@@ -31,6 +32,24 @@ def submit_case(case_data: AdverseEventCaseCreate, db: Session = Depends(get_db)
         requires_human_review=workflow_result.route_to_human_reviewer,
         review_reason=workflow_result.review_reason
     )
+
+@router.get("/{case_id}/audit")
+def get_case_audit(case_id: str, db: Session = Depends(get_db)):
+    """Get the complete chronological audit history for a case."""
+    logs = get_case_audit_trail(db, case_id)
+    return [
+        {
+            "id": log.id,
+            "case_id": log.case_id,
+            "action": log.action,
+            "previous_status": log.previous_status,
+            "new_status": log.new_status,
+            "actor": log.actor,
+            "details": log.details,
+            "timestamp": log.timestamp.isoformat()
+        }
+        for log in logs
+    ]
 
 @router.get("/{case_id}", response_model=AdverseEventCaseResponse)
 def get_case(case_id: str, db: Session = Depends(get_db)):

@@ -7,6 +7,7 @@ from app.services.duplicate_service import find_duplicate_case
 from app.ai.extraction import extract_case_info
 from app.ai.label_retrieval import retrieve_label_evidence
 from app.workflows.case_workflow import run_case_workflow, CaseWorkflowResult
+from app.services.audit_service import record_audit_log
 
 def generate_case_id() -> str:
     """Generate a unique human-readable case ID, e.g. PV-8F3A2B1C."""
@@ -60,6 +61,16 @@ def create_case(db: Session, case_data: AdverseEventCaseCreate) -> Tuple[CaseMod
     db.add(db_case)
     db.commit()
     db.refresh(db_case)
+
+    # 6. Record initial audit log entry
+    record_audit_log(
+        db=db,
+        case_id=db_case.case_id,
+        action="CASE_CREATED",
+        new_status=db_case.status,
+        actor=case_data.reporter_type.value,
+        details=f"Case created with triage priority {workflow_result.triage.priority}. Reason: {workflow_result.review_reason}"
+    )
 
     return db_case, workflow_result
 

@@ -107,10 +107,37 @@ elif page == "Case Status Lookup":
                     if case.get("duplicate_of"):
                         st.warning(f"Linked as potential duplicate of: {case['duplicate_of']}")
 
-                    tabs = st.tabs(["Extracted Information", "Drug Label Evidence"])
+                    tabs = st.tabs(["Summary", "Audit History", "Extracted Information", "Drug Label Evidence"])
                     with tabs[0]:
-                        st.json(case.get("extracted_info") or {})
+                        c1, c2 = st.columns(2)
+                        c1.write(f"**Suspected Drug:** {case.get('extracted_info', {}).get('drugs', ['N/A'])[0] if case.get('extracted_info') else 'N/A'}")
+                        c1.write(f"**Reactions:** {', '.join(case.get('extracted_info', {}).get('reactions', [])) if case.get('extracted_info') else 'N/A'}")
+                        c2.write(f"**Severity:** {case.get('extracted_info', {}).get('severity', 'N/A')}/5")
+                        c2.write(f"**Outcome:** {case.get('extracted_info', {}).get('outcome', 'Unknown')}")
+
                     with tabs[1]:
+                        st.subheader("Immutable Audit Trail")
+                        try:
+                            audit_res = requests.get(f"{API_URL}/cases/{case['case_id']}/audit", timeout=5)
+                            if audit_res.status_code == 200:
+                                audit_logs = audit_res.json()
+                                if audit_logs:
+                                    for log in audit_logs:
+                                        st.markdown(f"⏱️ **{log['timestamp'][:19]}** — `[{log['action']}]` by **{log['actor']}**")
+                                        st.write(f"Status transition: `{log['previous_status']}` ➔ `{log['new_status']}`")
+                                        if log.get("details"):
+                                            st.caption(f"Details: {log['details']}")
+                                        st.divider()
+                                else:
+                                    st.info("No audit logs recorded for this case.")
+                            else:
+                                st.warning("Could not fetch audit history.")
+                        except Exception:
+                            st.warning("Audit service temporarily unavailable.")
+
+                    with tabs[2]:
+                        st.json(case.get("extracted_info") or {})
+                    with tabs[3]:
                         st.json(case.get("evidence") or [])
                 else:
                     st.error(f"Case not found ({res.status_code}): {res.text}")
