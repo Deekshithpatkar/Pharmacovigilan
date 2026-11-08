@@ -47,3 +47,6 @@ class AdverseEventCaseResponse(BaseModel):
     duplicate_of: Optional[str] = None
     extracted_info: Optional[ExtractedCaseInfo] = None
     evidence: List[LabelEvidence] = Field(default_factory=list)
+    triage_priority: Optional[str] = None
+    requires_human_review: Optional[bool] = None
+    review_reason: Optional[str] = None

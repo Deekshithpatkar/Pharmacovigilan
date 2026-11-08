@@ -10,21 +10,26 @@ router = APIRouter(prefix="/cases", tags=["Cases"])
 
 @router.post("", response_model=AdverseEventCaseResponse, status_code=status.HTTP_201_CREATED)
 def submit_case(case_data: AdverseEventCaseCreate, db: Session = Depends(get_db)):
-    """Submit a new adverse event report."""
-    case, extracted_info, evidence = case_service.create_case(db, case_data)
+    """Submit a new adverse event report and run through safety workflow."""
+    case, workflow_result = case_service.create_case(db, case_data)
 
     if case.duplicate_of_id:
         message = f"Possible duplicate detected. Linked to {case.duplicate_of_id} for human review."
+    elif workflow_result.route_to_human_reviewer:
+        message = f"Case submitted. Routed for human review: {workflow_result.review_reason}"
     else:
-        message = "Adverse event report submitted successfully"
+        message = "Adverse event report processed and completed successfully."
 
     return AdverseEventCaseResponse(
         case_id=case.case_id,
         status=CaseStatus(case.status),
         message=message,
         duplicate_of=case.duplicate_of_id,
-        extracted_info=extracted_info,
-        evidence=evidence,
+        extracted_info=workflow_result.extracted_info,
+        evidence=workflow_result.evidence,
+        triage_priority=workflow_result.triage.priority,
+        requires_human_review=workflow_result.route_to_human_reviewer,
+        review_reason=workflow_result.review_reason
     )
 
 @router.get("/{case_id}", response_model=AdverseEventCaseResponse)

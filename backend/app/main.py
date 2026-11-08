@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from app.database import engine, Base
-from app.api.routes import health, cases
+from app.api.routes import health, cases, review
 
 # Ensure database tables exist
 Base.metadata.create_all(bind=engine)
@@ -13,6 +13,7 @@ app = FastAPI(
 
 app.include_router(health.router)
 app.include_router(cases.router)
+app.include_router(review.router)
 
 @app.get("/")
 def root():
