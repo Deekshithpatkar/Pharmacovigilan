@@ -22,3 +22,4 @@ def compute_serious_sensitivity(serious_detected: int, total_serious: int) -> fl
     if total_serious == 0:
         return 1.0
     return serious_detected / total_serious
+

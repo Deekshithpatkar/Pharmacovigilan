@@ -12,3 +12,4 @@ Each test case contains:
 - `expected_reactions`: Ground-truth reaction terms
 - `expected_priority`: Target triage priority (`URGENT`, `REVIEW_REQUIRED`, `ROUTINE`)
 - `is_serious`: Ground-truth clinical seriousness
+
