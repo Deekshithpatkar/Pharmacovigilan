@@ -31,3 +31,4 @@ The Pharmacovigilance System is an end-to-end decision-support pipeline designed
 - **Safety Triage:** Deterministic rules enforcing 100% serious event sensitivity
 - **Audit & Governance:** Immutable event log tracking every status transition
 - **User Interface:** Streamlit multi-page web application
+

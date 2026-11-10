@@ -33,3 +33,4 @@ Before deploying or evaluating in real clinical or hospital workflows, Stage 2 m
 - Perform root-cause failure analysis for any unlisted reaction classifications.
 
 > ⚠️ **Scope Boundary Notice:** Stage 1 establishes software technical readiness. Clinical validity and regulatory deployment are subject to Stage 2 and Stage 3 outcomes.
+

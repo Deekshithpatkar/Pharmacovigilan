@@ -13,3 +13,4 @@ To avoid non-deterministic or hallucinated clinical decisions, all safety classi
 ## Rule 3 — ROUTINE (Standard Surveillance)
 - **Condition:** Reaction is confirmed listed in the drug label AND severity $\le 3$ AND no duplicate conflict.
 - **Action:** Mark priority as `ROUTINE`, complete the case automatically (`status: completed`), and persist in the safety database for aggregate signal detection.
+
