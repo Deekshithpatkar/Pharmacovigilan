@@ -1,0 +1,47 @@
+[
+  {
+    "id": "BENCH-001",
+    "drug": "Amoxicillin",
+    "description": "Patient developed severe anaphylaxis and trouble breathing within 30 minutes of taking amoxicillin.",
+    "expected_drug": "Amoxicillin",
+    "expected_reactions": ["anaphylaxis"],
+    "expected_priority": "URGENT",
+    "expected_serious": true
+  },
+  {
+    "id": "BENCH-002",
+    "drug": "Paracetamol",
+    "description": "I got a mild skin rash on my arms after taking paracetamol for fever.",
+    "expected_drug": "Paracetamol",
+    "expected_reactions": ["skin rash"],
+    "expected_priority": "ROUTINE",
+    "expected_serious": false
+  },
+  {
+    "id": "BENCH-003",
+    "drug": "Metformin",
+    "description": "Experienced sudden hair loss and blurry vision while on metformin.",
+    "expected_drug": "Metformin",
+    "expected_reactions": ["hair loss", "blurry vision"],
+    "expected_priority": "REVIEW_REQUIRED",
+    "expected_serious": false
+  },
+  {
+    "id": "BENCH-004",
+    "drug": "Aspirin",
+    "description": "Elderly patient suffered cardiac arrest and unconsciousness following aspirin dose.",
+    "expected_drug": "Aspirin",
+    "expected_reactions": ["cardiac arrest"],
+    "expected_priority": "URGENT",
+    "expected_serious": true
+  },
+  {
+    "id": "BENCH-005",
+    "drug": "Ibuprofen",
+    "description": "Felt mild stomach upset and headache after taking ibuprofen.",
+    "expected_drug": "Ibuprofen",
+    "expected_reactions": ["headache"],
+    "expected_priority": "ROUTINE",
+    "expected_serious": false
+  }
+]
