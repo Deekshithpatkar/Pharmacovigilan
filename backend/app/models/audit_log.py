@@ -16,3 +16,4 @@ class AuditLogModel(Base):
     actor: Mapped[str] = mapped_column(String(100), default="SYSTEM", nullable=False)  # "SYSTEM", "REVIEWER", etc.
     details: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     timestamp: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
+

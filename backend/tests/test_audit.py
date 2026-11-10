@@ -43,3 +43,4 @@ def test_case_creation_and_review_generates_audit_logs():
     assert logs2[1]["actor"] == "SAFETY_OFFICER"
     assert logs2[1]["previous_status"] == "human_review"
     assert logs2[1]["new_status"] == "completed"
+

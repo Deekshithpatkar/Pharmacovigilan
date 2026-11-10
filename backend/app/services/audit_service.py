@@ -30,3 +30,4 @@ def get_case_audit_trail(db: Session, case_id: str) -> List[AuditLogModel]:
     return db.query(AuditLogModel).filter(
         AuditLogModel.case_id == case_id
     ).order_by(AuditLogModel.timestamp.asc()).all()
+
