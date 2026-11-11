@@ -67,7 +67,7 @@ def run_react_agent_investigation(
 ) -> Dict[str, Any]:
     """Execute the full ReAct loop and return the chain-of-thought steps and final answer."""
     llm = ChatGoogleGenerativeAI(
-        model="gemini-3.8-flash",
+        model="gemini-3.1-flash-lite",
         google_api_key=settings.gemini_api_key,
         api_version="v1beta",
         temperature=0.0
