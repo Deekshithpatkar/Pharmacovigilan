@@ -70,8 +70,15 @@ if page == "Submit Report":
                         agent_res = requests.post(f"{API_URL}/cases/agent-investigate", json=payload, timeout=120)
                     if agent_res.status_code == 200:
                         agent_data = agent_res.json()
-                        st.success("✅ Autonomous ReAct Agent Investigation Completed!")
+                        st.success(f"✅ ReAct Agent Investigation Completed & Saved! Case ID: **{agent_data.get('case_id')}**")
                         
+                        if agent_data.get("is_duplicate"):
+                            st.warning(f"⚠️ Potential Duplicate Detected! Linked to existing Case: **{agent_data.get('duplicate_of')}**")
+
+                        c1, c2 = st.columns(2)
+                        c1.metric("Status", agent_data.get("status", "N/A").upper())
+                        c2.metric("Triage Priority", agent_data.get("priority", "N/A"))
+
                         st.subheader("📋 Clinical Safety Summary")
                         st.markdown(agent_data.get("final_verdict", "No summary provided."))
 

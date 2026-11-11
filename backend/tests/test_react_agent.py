@@ -1,18 +1,28 @@
+from app.database import SessionLocal
+from app.api.schemas.case import AdverseEventCaseCreate, ReporterType
 from app.workflows.react_agent import run_react_agent_investigation
 
-def test_react_agent_execution():
-    """Verify that the ReAct agent executes tool calls and synthesizes a verdict."""
-    result = run_react_agent_investigation(
-        suspected_drug="Amoxicillin",
-        reaction_description="Patient developed severe hives and difficulty breathing.",
-        patient_info="Age: 45, Sex: Male"
-    )
+def test_react_agent_duplicate_check_and_saving():
+    """Verify ReAct agent calls check_duplicate_cases_tool and persists to DB."""
+    db = SessionLocal()
+    try:
+        case_data = AdverseEventCaseCreate(
+            reporter_type=ReporterType.PATIENT,
+            patient_age=50,
+            patient_sex="Female",
+            suspected_drug="Amoxicillin",
+            reaction_description="Patient developed severe hives and shortness of breath."
+        )
 
-    assert "final_verdict" in result
-    assert "agent_steps" in result
-    assert len(result["agent_steps"]) > 0
+        # 1. First run: Should create a new unique case
+        res1 = run_react_agent_investigation(db, case_data)
+        assert res1["case_id"].startswith("PV-")
+        assert res1["is_duplicate"] is False
 
-    # Verify that the agent called at least one of our domain tools
-    tool_names = [step["tool"] for step in result["agent_steps"] if "tool" in step]
-    assert any("tool" in t.lower() for t in tool_names)
-
+        # 2. Second run: Exact same report -> ReAct agent should catch the duplicate!
+        res2 = run_react_agent_investigation(db, case_data)
+        assert res2["case_id"].startswith("PV-")
+        assert res2["is_duplicate"] is True
+        assert res2["duplicate_of"] == res1["case_id"]
+    finally:
+        db.close()

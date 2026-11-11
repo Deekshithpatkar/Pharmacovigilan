@@ -35,13 +35,9 @@ def submit_case(case_data: AdverseEventCaseCreate, db: Session = Depends(get_db)
     )
 
 @router.post("/agent-investigate")
-def agent_investigate_case(case_data: AdverseEventCaseCreate):
-    """Run an autonomous ReAct agent investigation loop on an adverse report."""
-    return run_react_agent_investigation(
-        suspected_drug=case_data.suspected_drug,
-        reaction_description=case_data.reaction_description,
-        patient_info=f"Age: {case_data.patient_age}, Sex: {case_data.patient_sex}"
-    )
+def agent_investigate_case(case_data: AdverseEventCaseCreate, db: Session = Depends(get_db)):
+    """Run an autonomous ReAct agent investigation loop, check duplicates, and save to database."""
+    return run_react_agent_investigation(db, case_data)
 
 @router.get("/{case_id}/audit")
 def get_case_audit(case_id: str, db: Session = Depends(get_db)):
