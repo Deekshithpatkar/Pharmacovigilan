@@ -66,8 +66,8 @@ if page == "Submit Report":
 
             try:
                 if "Autonomous ReAct" in investigation_mode:
-                    with st.spinner("🤖 Autonomous ReAct Agent investigating with dynamic tool calls..."):
-                        agent_res = requests.post(f"{API_URL}/cases/agent-investigate", json=payload, timeout=30)
+                    with st.spinner("🤖 Autonomous ReAct Agent investigating with dynamic tool calls (may take ~30-45s)..."):
+                        agent_res = requests.post(f"{API_URL}/cases/agent-investigate", json=payload, timeout=120)
                     if agent_res.status_code == 200:
                         agent_data = agent_res.json()
                         st.success("ReAct Agent Investigation Completed!")
