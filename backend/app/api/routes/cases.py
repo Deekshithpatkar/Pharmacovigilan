@@ -6,6 +6,7 @@ from app.services import case_service
 from app.services.audit_service import get_case_audit_trail
 from app.ai.extraction import extract_case_info
 from app.ai.label_retrieval import retrieve_label_evidence
+from app.workflows.react_agent import run_react_agent_investigation
 
 router = APIRouter(prefix="/cases", tags=["Cases"])
 
@@ -31,6 +32,15 @@ def submit_case(case_data: AdverseEventCaseCreate, db: Session = Depends(get_db)
         triage_priority=workflow_result.triage.priority,
         requires_human_review=workflow_result.route_to_human_reviewer,
         review_reason=workflow_result.review_reason
+    )
+
+@router.post("/agent-investigate")
+def agent_investigate_case(case_data: AdverseEventCaseCreate):
+    """Run an autonomous ReAct agent investigation loop on an adverse report."""
+    return run_react_agent_investigation(
+        suspected_drug=case_data.suspected_drug,
+        reaction_description=case_data.reaction_description,
+        patient_info=f"Age: {case_data.patient_age}, Sex: {case_data.patient_sex}"
     )
 
 @router.get("/{case_id}/audit")

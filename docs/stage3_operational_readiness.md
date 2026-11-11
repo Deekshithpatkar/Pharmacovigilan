@@ -68,3 +68,4 @@ Adverse drug event narratives often contain sensitive Protected Health Informati
 
 ## 5. Scope Boundary & Legal Disclaimer
 > **Clinical & Legal Disclaimer:** This software is an automated decision-support prototype. It is not an FDA-cleared medical device and does not establish independent clinical diagnoses or replace qualified clinical judgement. Operational deployment requires formal institutional review board (IRB) approval, institutional IT sign-off, and organizational validation.
+

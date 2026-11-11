@@ -216,7 +216,8 @@ Follow this order and keep it stable unless a documented technical dependency re
 13. Add audit history and case-status updates.
 14. Write and run component and integration tests.
 15. Create a development benchmark and evaluation reports.
-16. Proceed to Stage 2 only when the Stage 1 prototype and its technical evaluation are documented.
+16. Proceed to Stage 2 only when the Stage 1 prototype and its tec
+hnical evaluation are documented.
 17. Proceed to Stage 3 only after the clinical evaluation plan, findings, risks, and applicable requirements have been reviewed.
 
 ## 8. Safety and Scope Rules

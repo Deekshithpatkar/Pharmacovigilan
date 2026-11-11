@@ -71,6 +71,13 @@ def normalize_drug_name(raw_name: str) -> str:
     cleaned = raw_name.strip().lower()
     return DRUG_SYNONYMS.get(cleaned, raw_name.strip().title())
 
+def standardize_reaction_term(raw_reaction: str) -> str:
+    """Map a single colloquial reaction term to its standardized MedDRA Preferred Term."""
+    if not raw_reaction:
+        return ""
+    cleaned = raw_reaction.strip().lower()
+    return REACTION_TERMS.get(cleaned, raw_reaction.strip().title())
+
 def normalize_reaction_terms(raw_reactions: List[str]) -> List[str]:
     """Map colloquial reaction terms to standardized clinical Preferred Terms (e.g. MedDRA PT)."""
     normalized = []

@@ -18,6 +18,13 @@ if page == "Submit Report":
     st.title("💊 Submit Adverse Drug Event Report")
     st.write("Report suspected side effects or adverse drug reactions for clinical safety evaluation.")
 
+    # TOGGLE: Mode selection
+    investigation_mode = st.radio(
+        "🧠 Select Processing Engine:",
+        ["Standard Production Engine (Fast & Deterministic)", "Autonomous ReAct Agent (Shows Live Thoughts & Tool Calls)"],
+        horizontal=True
+    )
+
     with st.form("adverse_event_form"):
         col1, col2 = st.columns(2)
         with col1:
@@ -58,30 +65,51 @@ if page == "Submit Report":
             }
 
             try:
-                res = requests.post(f"{API_URL}/cases", json=payload, timeout=10)
-                if res.status_code == 201:
-                    data = res.json()
-                    st.success(f"Report Submitted Successfully! Case ID: **{data['case_id']}**")
-                    
-                    st.subheader("Automated Safety Triage Summary")
-                    c1, c2, c3 = st.columns(3)
-                    c1.metric("Status", data.get("status", "N/A").upper())
-                    c2.metric("Triage Priority", data.get("triage_priority", "N/A"))
-                    c3.metric("Requires Human Review", "YES" if data.get("requires_human_review") else "NO")
+                if "Autonomous ReAct" in investigation_mode:
+                    with st.spinner("🤖 Autonomous ReAct Agent investigating with dynamic tool calls..."):
+                        agent_res = requests.post(f"{API_URL}/cases/agent-investigate", json=payload, timeout=30)
+                    if agent_res.status_code == 200:
+                        agent_data = agent_res.json()
+                        st.success("ReAct Agent Investigation Completed!")
+                        
+                        st.subheader("Agent Clinical Safety Verdict")
+                        st.markdown(agent_data.get("final_verdict", "No summary provided."))
 
-                    st.info(data.get("message"))
-
-                    # Display Extracted AI Info
-                    if data.get("extracted_info"):
-                        st.markdown("#### Extracted Clinical Info")
-                        st.json(data["extracted_info"])
-
-                    # Display Retrieved Evidence
-                    if data.get("evidence"):
-                        st.markdown("#### Drug Label Evidence Grounding")
-                        st.json(data["evidence"])
+                        st.subheader("Autonomous Chain-of-Thought & Tool Calls")
+                        for i, step in enumerate(agent_data.get("agent_steps", []), 1):
+                            if step["type"] == "ACTION / TOOL_CALL":
+                                st.markdown(f"**Step {i} — Action (Tool Call):** `{step['tool']}`")
+                                st.json(step.get("args", {}))
+                            else:
+                                st.markdown(f"**Step {i} — Tool Observation:**")
+                                st.info(step.get("content", ""))
+                    else:
+                        st.error(f"Agent Error ({agent_res.status_code}): {agent_res.text}")
                 else:
-                    st.error(f"Error {res.status_code}: {res.text}")
+                    res = requests.post(f"{API_URL}/cases", json=payload, timeout=10)
+                    if res.status_code == 201:
+                        data = res.json()
+                        st.success(f"Report Submitted Successfully! Case ID: **{data['case_id']}**")
+                        
+                        st.subheader("Automated Safety Triage Summary")
+                        c1, c2, c3 = st.columns(3)
+                        c1.metric("Status", data.get("status", "N/A").upper())
+                        c2.metric("Triage Priority", data.get("triage_priority", "N/A"))
+                        c3.metric("Requires Human Review", "YES" if data.get("requires_human_review") else "NO")
+
+                        st.info(data.get("message"))
+
+                        # Display Extracted AI Info
+                        if data.get("extracted_info"):
+                            st.markdown("#### Extracted Clinical Info")
+                            st.json(data["extracted_info"])
+
+                        # Display Retrieved Evidence
+                        if data.get("evidence"):
+                            st.markdown("#### Drug Label Evidence Grounding")
+                            st.json(data["evidence"])
+                    else:
+                        st.error(f"Error {res.status_code}: {res.text}")
             except Exception as e:
                 st.error(f"Could not connect to FastAPI backend at {API_URL}. Is the server running? Details: {e}")
 
