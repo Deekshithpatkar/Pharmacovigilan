@@ -192,58 +192,75 @@ elif page == "Case Status Lookup":
 # -------------------------------------------------------------
 elif page == "Reviewer Dashboard":
     st.title("🩺 Medical Safety Reviewer Dashboard")
-    st.write("Cases flagged as **URGENT** or requiring human review due to unexpected safety signals or potential duplicates.")
+    st.write("Restricted area for authorized pharmacovigilance safety officers.")
 
-    try:
-        res = requests.get(f"{API_URL}/review/pending", timeout=10)
-        if res.status_code == 200:
-            pending_cases = res.json()
-            st.metric("Total Pending Reviews", len(pending_cases))
+    # ACCESS GATE: Safety Officer Password
+    with st.sidebar:
+        st.divider()
+        st.subheader("🔐 Reviewer Authentication")
+        reviewer_key_input = st.text_input(
+            "Enter Safety Officer Key:",
+            type="password",
+            placeholder="Key required..."
+        )
 
-            if not pending_cases:
-                st.info("✅ No pending reviews at this time. All cases are processed!")
-            else:
-                for c in pending_cases:
-                    with st.expander(f"Case {c['case_id']} - Drug: {c['suspected_drug']} (Reported by: {c['reporter_type']})"):
-                        st.write(f"**Reaction Description:** {c['reaction_description']}")
-                        st.write(f"**Clinical Severity:** {c.get('severity', 'Unknown')}/5")
-                        st.write(f"**Current Status:** `{c['status']}`")
-                        if c.get("duplicate_of_id"):
-                            st.warning(f"Potential duplicate of: {c['duplicate_of_id']}")
+    if not reviewer_key_input.strip():
+        st.warning("🔒 Access Restricted: Please enter your Safety Officer Authorization Key in the sidebar to view pending cases.")
+    else:
+        auth_headers = {"X-Reviewer-Key": reviewer_key_input.strip()}
+        try:
+            res = requests.get(f"{API_URL}/review/pending", headers=auth_headers, timeout=10)
+            if res.status_code == 401:
+                st.error("🚫 Access Denied: Invalid Safety Officer Key.")
+            elif res.status_code == 200:
+                pending_cases = res.json()
+                st.metric("Total Pending Reviews", len(pending_cases))
 
-                        # Adjudication form
-                        with st.form(f"adjudicate_form_{c['case_id']}"):
-                            reviewer_notes = st.text_area(
-                                "Safety Officer Clinical Notes",
-                                placeholder="Enter clinical assessment, regulatory escalation notes, or merge decision..."
-                            )
-                            adjudicated_status = st.selectbox(
-                                "Set Final Decision",
-                                ["completed", "needs_information"],
-                                key=f"status_{c['case_id']}"
-                            )
-                            submit_review = st.form_submit_button("Confirm Clinical Adjudication")
+                if not pending_cases:
+                    st.info("✅ No pending reviews at this time. All cases are processed!")
+                else:
+                    for c in pending_cases:
+                        with st.expander(f"Case {c['case_id']} - Drug: {c['suspected_drug']} (Reported by: {c['reporter_type']})"):
+                            st.write(f"**Reaction Description:** {c['reaction_description']}")
+                            st.write(f"**Clinical Severity:** {c.get('severity', 'Unknown')}/5")
+                            st.write(f"**Current Status:** `{c['status']}`")
+                            if c.get("duplicate_of_id"):
+                                st.warning(f"Potential duplicate of: {c['duplicate_of_id']}")
 
-                        if submit_review:
-                            if not reviewer_notes.strip():
-                                st.error("Please provide reviewer clinical notes before submitting.")
-                            else:
-                                adj_payload = {
-                                    "reviewer_notes": reviewer_notes.strip(),
-                                    "adjudicated_status": adjudicated_status
-                                }
-                                adj_res = requests.post(
-                                    f"{API_URL}/review/{c['case_id']}/adjudicate",
-                                    json=adj_payload,
-                                    timeout=10
+                            # Adjudication form
+                            with st.form(f"adjudicate_form_{c['case_id']}"):
+                                reviewer_notes = st.text_area(
+                                    "Safety Officer Clinical Notes",
+                                    placeholder="Enter clinical assessment, regulatory escalation notes, or merge decision..."
                                 )
-                                if adj_res.status_code == 200:
-                                    st.success(f"Case {c['case_id']} successfully adjudicated!")
-                                    st.rerun()
+                                adjudicated_status = st.selectbox(
+                                    "Set Final Decision",
+                                    ["completed", "needs_information"],
+                                    key=f"status_{c['case_id']}"
+                                )
+                                submit_review = st.form_submit_button("Confirm Clinical Adjudication")
+
+                            if submit_review:
+                                if not reviewer_notes.strip():
+                                    st.error("Please provide reviewer clinical notes before submitting.")
                                 else:
-                                    st.error(f"Error submitting review: {adj_res.text}")
-        else:
-            st.error(f"Error fetching pending cases: {res.text}")
-    except Exception as e:
-        st.error(f"Could not connect to FastAPI backend at {API_URL}: {e}")
+                                    adj_payload = {
+                                        "reviewer_notes": reviewer_notes.strip(),
+                                        "adjudicated_status": adjudicated_status
+                                    }
+                                    adj_res = requests.post(
+                                        f"{API_URL}/review/{c['case_id']}/adjudicate",
+                                        json=adj_payload,
+                                        headers=auth_headers,
+                                        timeout=10
+                                    )
+                                    if adj_res.status_code == 200:
+                                        st.success(f"Case {c['case_id']} successfully adjudicated!")
+                                        st.rerun()
+                                    else:
+                                        st.error(f"Error submitting review: {adj_res.text}")
+            else:
+                st.error(f"Error fetching pending cases ({res.status_code}): {res.text}")
+        except Exception as e:
+            st.error(f"Could not connect to FastAPI backend at {API_URL}: {e}")
 

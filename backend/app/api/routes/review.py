@@ -1,12 +1,22 @@
 from typing import List, Optional
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Header, status
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
+from app.config import settings
 from app.database import get_db
 from app.api.schemas.case import CaseStatus
 from app.services import review_service
 
 router = APIRouter(prefix="/review", tags=["Review"])
+
+def verify_reviewer_access(x_reviewer_key: Optional[str] = Header(None, alias="X-Reviewer-Key")):
+    """Ensure request provides the valid clinical safety officer secret key."""
+    if not x_reviewer_key or x_reviewer_key.strip() != settings.reviewer_secret_key:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Access Denied: Invalid or missing Safety Officer authorization key."
+        )
+    return True
 
 class CaseReviewSummary(BaseModel):
     case_id: str
@@ -22,7 +32,10 @@ class HumanReviewSubmitRequest(BaseModel):
     adjudicated_status: CaseStatus = CaseStatus.COMPLETED
 
 @router.get("/pending", response_model=List[CaseReviewSummary])
-def list_pending_reviews(db: Session = Depends(get_db)):
+def list_pending_reviews(
+    db: Session = Depends(get_db),
+    authorized: bool = Depends(verify_reviewer_access)
+):
     """List all cases requiring safety officer / human review."""
     cases = review_service.get_pending_review_cases(db)
     return [
@@ -42,7 +55,8 @@ def list_pending_reviews(db: Session = Depends(get_db)):
 def adjudicate_case(
     case_id: str,
     review_req: HumanReviewSubmitRequest,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    authorized: bool = Depends(verify_reviewer_access)
 ):
     """Adjudicate and finalize a reviewed case."""
     updated_case = review_service.submit_human_review(

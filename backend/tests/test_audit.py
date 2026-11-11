@@ -24,9 +24,11 @@ def test_case_creation_and_review_generates_audit_logs():
     assert logs[0]["actor"] == "nurse"
     assert logs[0]["new_status"] == "human_review"
 
-    # 3. Adjudicate the case
+    # 3. Adjudicate the case (with reviewer key)
+    headers = {"X-Reviewer-Key": "med_safety_2026"}
     adj_res = client.post(
         f"/review/{case_id}/adjudicate",
+        headers=headers,
         json={
             "reviewer_notes": "Allergy confirmed. Epinephrine administered.",
             "adjudicated_status": "completed"

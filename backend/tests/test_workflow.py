@@ -41,8 +41,9 @@ def test_reviewer_can_list_and_adjudicate_case():
     create_res = client.post("/cases", json=payload)
     case_id = create_res.json()["case_id"]
 
-    # 2. Reviewer checks pending cases
-    pending_res = client.get("/review/pending")
+    # 2. Reviewer checks pending cases (with auth header)
+    headers = {"X-Reviewer-Key": "med_safety_2026"}
+    pending_res = client.get("/review/pending", headers=headers)
     assert pending_res.status_code == 200
     pending_ids = [c["case_id"] for c in pending_res.json()]
     assert case_id in pending_ids
@@ -50,6 +51,7 @@ def test_reviewer_can_list_and_adjudicate_case():
     # 3. Reviewer adjudicates the case
     adjudicate_res = client.post(
         f"/review/{case_id}/adjudicate",
+        headers=headers,
         json={
             "reviewer_notes": "Reviewed by Dr. Smith. Escalated to regulatory pharmacovigilance team.",
             "adjudicated_status": "completed"

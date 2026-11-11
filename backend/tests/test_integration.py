@@ -35,8 +35,9 @@ def test_full_end_to_end_case_lifecycle():
     assert "Amoxicillin" in case_data["extracted_info"]["drugs"]
     assert len(case_data["evidence"]) > 0
 
-    # Step 5: Verify case appears in Reviewer Queue
-    pending_res = client.get("/review/pending")
+    # Step 5: Verify case appears in Reviewer Queue (with authorization)
+    headers = {"X-Reviewer-Key": "med_safety_2026"}
+    pending_res = client.get("/review/pending", headers=headers)
     assert pending_res.status_code == 200
     pending_ids = [c["case_id"] for c in pending_res.json()]
     assert case_id in pending_ids
@@ -46,7 +47,7 @@ def test_full_end_to_end_case_lifecycle():
         "reviewer_notes": "Adjudicated by Pharmacovigilance Officer. Anaphylactic reaction confirmed.",
         "adjudicated_status": "completed"
     }
-    adj_res = client.post(f"/review/{case_id}/adjudicate", json=adjudicate_payload)
+    adj_res = client.post(f"/review/{case_id}/adjudicate", headers=headers, json=adjudicate_payload)
     assert adj_res.status_code == 200
     assert adj_res.json()["new_status"] == "completed"
 
