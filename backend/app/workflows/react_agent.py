@@ -100,9 +100,14 @@ def run_react_agent_investigation(
                 "content": str(msg.content)
             })
 
-    final_answer = response["messages"][-1].content
+    raw_final = response["messages"][-1].content
+    if isinstance(raw_final, list):
+        # Extract pure text from Gemini response chunks
+        final_answer = "".join(part.get("text", "") if isinstance(part, dict) else str(part) for part in raw_final)
+    else:
+        final_answer = str(raw_final)
 
     return {
-        "final_verdict": final_answer,
+        "final_verdict": final_answer.strip(),
         "agent_steps": steps
     }

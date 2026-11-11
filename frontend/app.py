@@ -70,19 +70,27 @@ if page == "Submit Report":
                         agent_res = requests.post(f"{API_URL}/cases/agent-investigate", json=payload, timeout=120)
                     if agent_res.status_code == 200:
                         agent_data = agent_res.json()
-                        st.success("ReAct Agent Investigation Completed!")
+                        st.success("✅ Autonomous ReAct Agent Investigation Completed!")
                         
-                        st.subheader("Agent Clinical Safety Verdict")
+                        st.subheader("📋 Clinical Safety Summary")
                         st.markdown(agent_data.get("final_verdict", "No summary provided."))
 
-                        st.subheader("Autonomous Chain-of-Thought & Tool Calls")
-                        for i, step in enumerate(agent_data.get("agent_steps", []), 1):
-                            if step["type"] == "ACTION / TOOL_CALL":
-                                st.markdown(f"**Step {i} — Action (Tool Call):** `{step['tool']}`")
-                                st.json(step.get("args", {}))
-                            else:
-                                st.markdown(f"**Step {i} — Tool Observation:**")
-                                st.info(step.get("content", ""))
+                        st.subheader("🔍 Autonomous Chain-of-Thought & Tool Calls")
+                        steps = agent_data.get("agent_steps", [])
+                        if not steps:
+                            st.info("No tool steps recorded.")
+                        else:
+                            for idx, s in enumerate(steps, 1):
+                                if s["type"] == "ACTION / TOOL_CALL":
+                                    tool_name = s.get("tool", "unknown_tool")
+                                    args_str = ", ".join(f"{k}='{v}'" for k, v in s.get("args", {}).items())
+                                    with st.expander(f"🛠️ Step {idx}: Agent called `{tool_name}({args_str})`", expanded=True):
+                                        st.caption("Tool Arguments:")
+                                        st.json(s.get("args", {}))
+                                else:
+                                    tool_name = s.get("tool", "Tool")
+                                    with st.expander(f"📥 Step {idx}: Observation from `{tool_name}`", expanded=False):
+                                        st.write(s.get("content", ""))
                     else:
                         st.error(f"Agent Error ({agent_res.status_code}): {agent_res.text}")
                 else:
